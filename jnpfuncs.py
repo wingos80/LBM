@@ -169,6 +169,10 @@ def streaming_step(f: jnp.ndarray)-> jnp.ndarray:
 
 
 def BC_solids(f: jnp.ndarray, solids: jnp.ndarray)-> jnp.ndarray:
+    # _solids = jnp.repeat(jnp.expand_dims(solids,axis=2),9,axis=2)
+    # b = jnp.where(_solids, jnp.zeros_like(f), f)
+    # b = b[:,:,[0,3,4,1,2,7,8,5,6]]
+    # f = jnp.where(_solids, b, f)
     b = f[solids,:]
     b = b[:,[0,3,4,1,2,7,8,5,6]]
     f = f.at[solids,:].set(b)

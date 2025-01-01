@@ -1,16 +1,16 @@
-import matplotlib.pyplot as plt
 import numpy as np
-
-# If you want to select which platform JAX runs on, need to do so before jax is imported
 import os
-os.environ["JAX_PLATFORM_NAME"] = "cpu"
-
 from settings import *
+os.environ["JAX_PLATFORM_NAME"] = USE_DEVICE
+
 from jnpfuncs import *
+from utils import *
 from tqdm import tqdm
 
 print(f"You are using device: {jax.devices()[0]}")
 
+# TODO have all libarry imports in one place instead of scattered between e.g. main.py, settings.py, utils.py...?
+# TODO add saving class/context manager/something to make saving pictures prettier
 # TODO redo folder struction
 # TODO better solids creation/customization
 # TODO add functionality to select D2Q9 or supply own velocity set (change moment and f_eq calcs to generic)
@@ -26,7 +26,10 @@ f = flow_right()
 solids = create_solids()
 
 @jax.jit
-def one_time_march(f):
+def one_time_march(f: np.ndarray):
+    """
+    Simulate one step forward in time
+    """
     # # # absorbing left and right walls
     # # f[0,:,[1,5,8]] = f[1,:,[1,5,8]]
     # # f[-1,:,[3,6,7]] = f[-2,:,[3,6,7]]
@@ -46,26 +49,34 @@ def one_time_march(f):
 
 
 with catchtime() as timer:
-    for t in tqdm(range(TIME)):
-        f, u = one_time_march(f)
+    if not RECORD:
+        print("Rendering simulation")
+        for t in tqdm(range(TIME)):
+            f, u = one_time_march(f)
         
-        # plot in real time
-        if t%100==0:
-            plt.cla()
-            vorticity = (np.roll(u[:,:,0], -1, axis=1) - np.roll(u[:,:,0], 1, axis=1)) - (np.roll(u[:,:,1],-1,axis=0) - np.roll(u[:,:,1],1,axis=0))
-            # vorticity = u[:,:,0]**2 + u[:,:,1]**2
-            # cmap = plt.cm.bwr
-            # cmap.set_bad('black')
-            # arrowsx, arrowsy = u[:,:,0], u[:,:,1]
-            # arrowsx[solids] = np.nan
-            # arrowsy[solids] = np.nan
-            # plt.quiver(X, Y, arrowsx, arrowsy)
-            vorticity[solids] = np.nan
-            plt.imshow(vorticity.T, cmap='bwr')
-            plt.clim(-.1, .1)
-            ax = plt.gca()
-            ax.invert_yaxis()
-            ax.get_xaxis().set_visible(False)
-            ax.get_yaxis().set_visible(False)
-            ax.set_aspect("equal")
-            plt.pause(0.0001)
+            # plot in real time
+            if t%10==0:
+                vorticity = (np.roll(u[:,:,0], -1, axis=1) - np.roll(u[:,:,0], 1, axis=1)) - (np.roll(u[:,:,1],-1,axis=0) - np.roll(u[:,:,1],1,axis=0))
+                vorticity[solids] = np.nan
+                plot(vorticity.T)
+    elif RECORD:
+        print(f"Recording simulation, saving frames to ./recording/{USE_DEVICE}/{IMG_TYPE}/")
+        start_time = time.time()
+        elapsed_time = time.time() - start_time
+        last_saved = elapsed_time
+        frame = 0
+        while (elapsed_time < RECORD_TIME):
+            elapsed_time = time.time() - start_time
+            f, u = one_time_march(f)
+
+            time_since_last_saved = elapsed_time - last_saved
+            print(f"{elapsed_time:.3f} s: Time since last saved: {time_since_last_saved:.3f} s", end="\r")
+            # save frames every fps seconds
+            if time_since_last_saved > FT:
+                    frame += 1
+                    vorticity = (np.roll(u[:,:,0], -1, axis=1) - np.roll(u[:,:,0], 1, axis=1)) - (np.roll(u[:,:,1],-1,axis=0) - np.roll(u[:,:,1],1,axis=0))
+                    vorticity[solids] = np.nan
+                    plot(vorticity.T, frame=frame, save_dir=USE_DEVICE, img_type=IMG_TYPE, save=True)
+                    last_saved = time.time() - start_time
+        print("\n")
+

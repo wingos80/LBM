@@ -9,6 +9,18 @@ DT = 1
 CS2 = 1/1
 TIME = 16000
 
+# Rendering options
+RECORD = False
+RECORD_TIME = 5  # how many seconds to record for
+FPS = 15  # frames per second
+FT = 1/FPS  # frame time
+IMG_TYPE = "png"
+
+# Jax options
+CPU = "cpu"
+GPU = "gpu"
+USE_DEVICE = CPU
+
 # Pressure difference
 DP = 0.1
 P_OUT = 1
@@ -26,15 +38,3 @@ x = np.arange(XMAX)
 y = np.arange(YMAX)
 X,Y = np.meshgrid(x,y)
 X,Y = X.T, Y.T
-
-from time import perf_counter
-
-class catchtime:
-    def __enter__(self):
-        self.start = perf_counter()
-        return self
-
-    def __exit__(self, type, value, traceback):
-        self.time = perf_counter() - self.start
-        self.readout = f'Time: {self.time:.3f} seconds'
-        print(self.readout)
