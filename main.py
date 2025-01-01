@@ -1,4 +1,3 @@
-import jax
 import matplotlib.pyplot as plt
 import numpy as np
 from settings import *
@@ -8,7 +7,6 @@ from tqdm import tqdm
 # TODO redo folder struction
 # TODO better solids creation/customization
 # TODO add functionality to select D2Q9 or supply own velocity set (change moment and f_eq calcs to generic)
-# https://github.com/Safiullah-Rahu/Lattice-Boltzmann-Simulation/blob/main/Boltzmann_simu.py
 
 # Pressure difference
 calculate_f_eq_out = lambda u_1: calculate_f_eq(rho_out, u_1)[-1,:,:]
@@ -40,14 +38,12 @@ def one_time_march(f):
     return f, u
 
 
-history = []
-cpus = jax.devices()
 with catchtime() as timer:
     for t in tqdm(range(TIME)):
         f, u = one_time_march(f)
         
-        # plot in real time - color 1/2 particles blue, other half red
-        if t%20==0:
+        # plot in real time
+        if t%10==0:
             plt.cla()
             vorticity = (np.roll(u[:,:,0], -1, axis=1) - np.roll(u[:,:,0], 1, axis=1)) - (np.roll(u[:,:,1],-1,axis=0) - np.roll(u[:,:,1],1,axis=0))
             # vorticity = u[:,:,0]**2 + u[:,:,1]**2

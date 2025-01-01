@@ -1,4 +1,5 @@
 import jax.numpy as jnp
+import jax
 from settings import *
 
 ## Initial conditions
@@ -60,7 +61,7 @@ def flow_random()-> jnp.ndarray:
 def create_solids()-> jnp.ndarray:
     solids = jnp.logical_or(Y == 0, Y==YMAX-1)  # solid top and bottom walls
     circle_center = XMAX/4, YMAX/2+4
-    circle_radius = YMAX/10
+    circle_radius = YMAX/5
     solids += (X - circle_center[0])**2 + (Y - circle_center[1])**2 < (circle_radius)**2
     return solids
 
