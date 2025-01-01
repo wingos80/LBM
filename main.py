@@ -1,8 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
+
+# If you want to select which platform JAX runs on, need to do so before jax is imported
+import os
+os.environ["JAX_PLATFORM_NAME"] = "cpu"
+
 from settings import *
 from jnpfuncs import *
 from tqdm import tqdm
+
+print(f"You are using device: {jax.devices()[0]}")
 
 # TODO redo folder struction
 # TODO better solids creation/customization
@@ -43,7 +50,7 @@ with catchtime() as timer:
         f, u = one_time_march(f)
         
         # plot in real time
-        if t%10==0:
+        if t%100==0:
             plt.cla()
             vorticity = (np.roll(u[:,:,0], -1, axis=1) - np.roll(u[:,:,0], 1, axis=1)) - (np.roll(u[:,:,1],-1,axis=0) - np.roll(u[:,:,1],1,axis=0))
             # vorticity = u[:,:,0]**2 + u[:,:,1]**2
