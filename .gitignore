@@ -1,0 +1,11 @@
+# ignore the books
+*.pdf
+
+# ignore the matlab files
+*.m
+
+# ignore the .files
+.*/
+
+# ignore the __ files
+__pycache__/
