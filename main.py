@@ -55,7 +55,7 @@ with catchtime() as timer:
             f, u = one_time_march(f)
         
             # plot in real time
-            if t%10==0:
+            if t%100==0:
                 vorticity = (np.roll(u[:,:,0], -1, axis=1) - np.roll(u[:,:,0], 1, axis=1)) - (np.roll(u[:,:,1],-1,axis=0) - np.roll(u[:,:,1],1,axis=0))
                 vorticity[solids] = np.nan
                 plot(vorticity.T)
