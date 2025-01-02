@@ -1,8 +1,39 @@
+"""
+MIT License
+
+Copyright (c) 2025 Wing Yin Chan
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+import platform
+from settings import *
+if USE_DEVICE==GPU and platform.system()=="Windows":
+    print(f"{COLOR.RED}> JAX on windows does not have GPU support <{COLOR.END}")
+    USE_DEVICE = CPU
+import os
+os.environ["JAX_PLATFORM_NAME"] = USE_DEVICE
+
 import jax.numpy as jnp
 import jax
-from settings import *
+print(f"You are using {USE_LIBRARY} on {jax.devices()[0].device_kind}")
 
-## Initial conditions
+## Initial conditions, TODO make as a class with static methods?
 def flow_taylorgreen(t=0, tau=1, rho0=1, u_max=0.2)-> jnp.ndarray:
     nu=(2*tau-1)/6
     x = jnp.arange(XMAX)+0.5
@@ -157,6 +188,9 @@ def collision_step(f: jnp.ndarray, f_eq: jnp.ndarray, dt=1, tau=1)-> jnp.ndarray
 
 
 def streaming_step(f: jnp.ndarray)-> jnp.ndarray:
+    """
+    Particle streamed according to their velocities
+    """
     # Streaming
     f_streamed = jnp.stack([jnp.roll(jnp.roll(f[:,:,i], 
                                               c[0,i], 
@@ -169,12 +203,27 @@ def streaming_step(f: jnp.ndarray)-> jnp.ndarray:
 
 
 def BC_solids(f: jnp.ndarray, solids: jnp.ndarray)-> jnp.ndarray:
-    # _solids = jnp.repeat(jnp.expand_dims(solids,axis=2),9,axis=2)
-    # b = jnp.where(_solids, jnp.zeros_like(f), f)
-    # b = b[:,:,[0,3,4,1,2,7,8,5,6]]
-    # f = jnp.where(_solids, b, f)
-    b = f[solids,:]
-    b = b[:,[0,3,4,1,2,7,8,5,6]]
-    f = f.at[solids,:].set(b)
+    """
+    Boundary condition for solids
+    """
+    _solids = jnp.repeat(jnp.expand_dims(solids,axis=2),9,axis=2)  # expanding the solid matrix to be same shape as f:(XMAX, YMAX, 9)
+    b = jnp.where(_solids, f, 0)  # select all particles inside solids
+    b = b[:,:,[0,3,4,1,2,7,8,5,6]]  # flip the velocities of these particles
+    f = jnp.where(_solids, b, f)  # insert them back into f
     return f
 
+## Simulation function
+@jax.jit
+def one_time_march(f: np.ndarray, solids):
+    """
+    Simulate one step forward in time
+    """
+    rho = calculate_rho(f)
+    momentum = calculate_momentum(f)
+    u = calculate_velocity(momentum, rho)
+
+    f_eq = calculate_f_eq(rho, u)
+    f = collision_step(f, f_eq, dt=DT, tau=TAU)
+    f = streaming_step(f)
+    f = BC_solids(f, solids)
+    return f, u
