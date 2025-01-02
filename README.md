@@ -2,14 +2,33 @@
 
 LBM simulation built in python using JAX and numpy. 
 
-## Run on GPU or CPU
+## Requirements
 
-Switch between using gpu and cpu in the settings file:
-- `USE_DEVICE= CPU` to run on CPU
-- `USE_DEVICE= GPU` to run on GPU
-Note however, that JAX currently [only offers GPU support on Linux](https://jax.readthedocs.io/en/latest/installation.html#:~:text=libtpu_releases.html-,Supported%20platforms,no,-CPU), so it is not possible to use the GPU if you are running on windows.
+This code was developed with `Python=3.10`, tested on Windows and WSL.
 
-# LBM ran on GPU vs CPU
+Libraries:
+- Numpy
+- Jax
+- Matplotlib
+- tqdm
+
+## Settings.py options
+
+Switch between rendering a plot vs recording renders to disk:
+- `RECORD = False` for rendering the simulation
+- `RECORD = True` for saving simulation to disk
+
+Switch between the Numpy and JAX implementations:
+- `USE_LIBRARY = NP` for Numpy
+- `USE_LIBRARY = JAX` for JAX
+
+Switch between using gpu and cpu:
+- `USE_DEVICE = CPU` for CPU
+- `USE_DEVICE = GPU` for GPU
+
+Note that JAX currently [only offers GPU support on Linux](https://jax.readthedocs.io/en/latest/installation.html#:~:text=libtpu_releases.html-,Supported%20platforms,no,-CPU), so it is not possible to use the GPU if you are running on windows. Numpy on the otherhand, does not support GPU support on any platform.
+
+## LBM ran on GPU vs CPU
 
 On GPU:
 
