@@ -1,0 +1,10 @@
+TODO add solids as arg to one_time_march()
+TODO have plotting be done on a frames-per-second basis, instead of every n-th timestep
+TODO have plotting always on, and then saving frames as option
+TODO have all controlling variables be defined in settings.py
+TODO select numpy or jax more easily, e.g. from settings.py
+TODO have all libarry imports in one place instead of scattered between e.g. main.py, settings.py, utils.py...?
+TODO add saving class/context manager/something to make saving pictures prettier
+TODO redo folder/code structure
+TODO better solids creation/customization
+TODO add functionality to select D2Q9 or supply own velocity set (change moment and f_eq calcs to generic)
