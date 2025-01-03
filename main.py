@@ -48,7 +48,12 @@ if __name__ == "__main__":
         if not RECORD:
             print("Rendering simulation")
             for t in tqdm(range(TIME)):
-                f, u = one_time_march(f, solids)
+                # if t > 33000:
+                #     PLOT_EVERY = 5
+                #     if np.any(np.isnan(u)): 
+                #         print(f"nans detected {t}")
+                #         break
+                f, u = update(f, solids)
                 
                 # plot every PLOT_EVERY seconds
                 if t % PLOT_EVERY == 0:
@@ -61,7 +66,7 @@ if __name__ == "__main__":
             frame = 0
             while (elapsed_time < RECORD_TIME):
                 elapsed_time = time.time() - start_time
-                f, u = one_time_march(f, solids)
+                f, u = update(f, solids)
 
                 time_since_last_saved = elapsed_time - last_saved
                 print(f"{elapsed_time:.3f} s: Time since last saved: {time_since_last_saved:.3f} s", end="\r")

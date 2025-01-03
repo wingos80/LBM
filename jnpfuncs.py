@@ -31,6 +31,7 @@ os.environ["JAX_PLATFORM_NAME"] = USE_DEVICE
 
 import jax.numpy as jnp
 import jax
+# jax.config.update("jax_enable_x64", True)
 print(f"You are using {USE_LIBRARY} on {jax.devices()[0].device_kind}")
 
 ## Initial conditions, TODO make as a class with static methods?
@@ -66,10 +67,11 @@ def flow_up()-> jnp.ndarray:
 
 
 def flow_right()-> jnp.ndarray:
+    vel = INFLOW_VEL
     rho = jnp.ones((XMAX,YMAX))
     # rho[-3,:] += 1
     # u = 0.15*jnp.ones((XMAX,YMAX,2))
-    u = jnp.stack((0.15*jnp.ones((XMAX,YMAX,1)),jnp.zeros((XMAX,YMAX,1))),axis=2)
+    u = jnp.stack((vel*jnp.ones((XMAX,YMAX,1)),jnp.zeros((XMAX,YMAX,1))),axis=2)
     # u.at[:,:,1].set(0)  # make uy 0
     # u[:-3,:,0] = 0  # make ux 0 
     # u[-2:,:,0] = 0  # make ux 0 
@@ -92,7 +94,7 @@ def flow_random()-> jnp.ndarray:
 def create_solids()-> jnp.ndarray:
     solids = jnp.logical_or(Y == 0, Y==YMAX-1)  # solid top and bottom walls
     circle_center = XMAX/4, YMAX/2+4
-    circle_radius = YMAX/5
+    circle_radius = YMAX/10
     solids += (X - circle_center[0])**2 + (Y - circle_center[1])**2 < (circle_radius)**2
     return solids
 
@@ -214,15 +216,31 @@ def BC_solids(f: jnp.ndarray, solids: jnp.ndarray)-> jnp.ndarray:
 
 ## Simulation function
 @jax.jit
-def one_time_march(f: np.ndarray, solids):
+def update(f: np.ndarray, solids):
     """
     Simulate one step forward in time
     """
+    # Prescribe outflow BC
+    f = f.at[-1,:,[3,6,7]].set(f[-2,:,[3,6,7]])
+
     rho = calculate_rho(f)
     momentum = calculate_momentum(f)
     u = calculate_velocity(momentum, rho)
 
+    # Zou/He inflow scheme part 1
+    u = u.at[0,1:-1,0].set(INFLOW_VEL)  # set inflow vx to be 0.1
+    u = u.at[0,1:-1,1].set(0)           # set inflow vy to be 0
+    rho_vert_fs = calculate_rho(f[:1,:,[0,2,4]])  # :1 in the first index to keep shape
+    rho_left_fs = calculate_rho(f[:1,:,[3,6,7]])  # :1 in the first index to keep shape
+    rho = rho.at[:1,:].set((rho_vert_fs + 2*rho_left_fs)/(1 - u[:1,:,0]))
+
+    # find equillibrium population
     f_eq = calculate_f_eq(rho, u)
+    
+    # Zou/He inflow scheme part 1
+    f = f.at[0,:,[1,5,8]].set(f_eq[0,:,[1,5,8]])
+
+    # perform collision, streaming, and solid BCs
     f = collision_step(f, f_eq, dt=DT, tau=TAU)
     f = streaming_step(f)
     f = BC_solids(f, solids)

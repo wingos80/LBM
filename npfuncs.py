@@ -63,9 +63,10 @@ def flow_up()-> np.ndarray:
 
 
 def flow_right()-> np.ndarray:
+    vel = INFLOW_VEL
     rho = np.ones((XMAX,YMAX))
     # rho[-3,:] += 1
-    u = 0.15*np.ones((XMAX,YMAX,2))
+    u = vel*np.ones((XMAX,YMAX,2))
     u[:,:,1] = 0  # make uy 0
     # u[:-3,:,0] = 0  # make ux 0 
     # u[-2:,:,0] = 0  # make ux 0 
@@ -202,13 +203,31 @@ def BC_solids(f: np.ndarray, solids: np.ndarray[bool])-> np.ndarray:
 
 ## Simulation function
 
-def one_time_march(f: np.ndarray, solids):
+def update(f: np.ndarray, solids):
     """
     Simulate one step forward in time
     """
+    # Prescribe outflow BC
+    f[-1,:,[3,6,7]] = f[-2,:,[3,6,7]]
+
     rho = calculate_rho(f)
     momentum = calculate_momentum(f)
     u = calculate_velocity(momentum, rho)
+
+    # Zou/He inflow scheme part 1
+    u[0,1:-1,0] = INFLOW_VEL  # set inflow velocity to be 0.1
+    u[0,1:-1,1] = 0           # set inflow vy to be 0
+    rho_vert_fs = calculate_rho(f[0:1,:,[0,2,4]])
+    rho_left_fs = calculate_rho(f[0:1,:,[3,6,7]])
+    rho[0,:] = (rho_vert_fs + 2*rho_left_fs)/(1 - u[0,:,0])
+
+    # find equillibrium population
+    f_eq = calculate_f_eq(rho, u)
+    
+    # Zou/He inflow scheme part 1
+    f[0,:,[1,5,8]] = f_eq[0,:,[1,5,8]]
+
+    # perform collision, streaming, and solid BCs
 
     f_eq = calculate_f_eq(rho, u)
     f = collision_step(f, f_eq, dt=DT, tau=TAU)

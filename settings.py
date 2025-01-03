@@ -10,14 +10,15 @@ USE_DEVICE  = GPU
 
 # Grid size
 XMAX  = 400
-YMAX  = 100
+YMAX  = 200
 MSIZE = XMAX*YMAX
 
 # Control variables
-TAU  = 0.53
+TAU  = 0.5075
 DT   = 1
 CS2  = 1/1
-TIME = 1000
+TIME = 72000
+INFLOW_VEL = 0.03
 
 # Plotting options
 PLOT_EVERY = 100  # render every n-th frame
