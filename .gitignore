@@ -9,3 +9,6 @@
 
 # ignore the __ files
 __pycache__/
+
+# ignore test file
+test.py

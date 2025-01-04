@@ -9,7 +9,7 @@ USE_LIBRARY = JAX
 USE_DEVICE  = GPU
 
 # Grid size
-XMAX  = 400
+XMAX  = 600
 YMAX  = 200
 MSIZE = XMAX*YMAX
 
@@ -18,10 +18,10 @@ TAU  = 0.5075
 DT   = 1
 CS2  = 1/1
 TIME = 72000
-INFLOW_VEL = 0.03
+INFLOW_VEL = 0.05
 
 # Plotting options
-PLOT_EVERY = 100  # render every n-th frame
+PLOT_EVERY = 150  # render every n-th frame
 
 # Recording options
 RECORD      = False  # toggle recording

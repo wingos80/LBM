@@ -48,11 +48,6 @@ if __name__ == "__main__":
         if not RECORD:
             print("Rendering simulation")
             for t in tqdm(range(TIME)):
-                # if t > 33000:
-                #     PLOT_EVERY = 5
-                #     if np.any(np.isnan(u)): 
-                #         print(f"nans detected {t}")
-                #         break
                 f, u = update(f, solids)
                 
                 # plot every PLOT_EVERY seconds

@@ -23,6 +23,7 @@ SOFTWARE.
 """
 import platform
 from settings import *
+from airfoil import *
 if USE_DEVICE==GPU and platform.system()=="Windows":
     print(f"{COLOR.RED}> JAX on windows does not have GPU support <{COLOR.END}")
     USE_DEVICE = CPU
@@ -95,8 +96,38 @@ def create_solids()-> jnp.ndarray:
     solids = jnp.logical_or(Y == 0, Y==YMAX-1)  # solid top and bottom walls
     circle_center = XMAX/4, YMAX/2+4
     circle_radius = YMAX/10
-    solids += (X - circle_center[0])**2 + (Y - circle_center[1])**2 < (circle_radius)**2
-    return solids
+    # solids += (X - circle_center[0])**2 + (Y - circle_center[1])**2 < (circle_radius)**2
+
+    airfoil_le = XMAX//6, YMAX//2  # location of airfoil leading edge
+    chord_length = XMAX//4  # size of airfoil, scaling factor
+    n_pts = 10000
+    x = np.linspace(0,1,n_pts)
+    U_n, L_n = construct_airfoil(x)
+    U, L = chord_length*U_n, chord_length*L_n
+    step = n_pts//chord_length  # assuming n_pts > chord length
+
+    top = U[1].max()
+    bottom = L[1].min()
+
+    U[1] += abs(bottom)
+    L[1] += abs(bottom)
+
+    thickness = int(np.ceil(top-bottom))
+    hold_array = jnp.full((chord_length, thickness), False)
+
+    # go through slice by slice and fill in the airfoil solid with True
+    for i in range(chord_length):
+        location = i*step
+        slice_i = jnp.arange(thickness)
+        slice_i = jnp.logical_and(slice_i>=L[1,location], slice_i <= U[1,location])
+        
+        hold_array = hold_array.at[i].set(slice_i) 
+
+    solids_2 = jnp.full((XMAX, YMAX), False)
+    solids_2 = solids_2.at[:chord_length,:thickness].set(hold_array)
+    solids_2 = jnp.roll(jnp.roll(solids_2, airfoil_le[0], axis=0), airfoil_le[1], axis=1)
+    # solids += solids_2
+    return solids_2
 
 
 ## Moments of f
