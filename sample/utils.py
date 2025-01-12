@@ -18,11 +18,12 @@ class catchtime:
 def plot(array: np.ndarray, frame=0, save_dir="cpu", img_type="jpg", save: bool=False):
     plt.cla()
     plt.imshow(array, cmap='bwr')
-    plt.clim(-.1, .1)
+    plt.clim(-.01, .01)
     ax = plt.gca()
     ax.invert_yaxis()
-    ax.get_xaxis().set_visible(False)
-    ax.get_yaxis().set_visible(False)
+    plt.grid()
+    #ax.get_xaxis().set_visible(False)
+    #ax.get_yaxis().set_visible(False)
     ax.set_aspect("equal")
     if save:
         dirr = f".recordings/{save_dir}/{img_type}"
