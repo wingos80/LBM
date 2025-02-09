@@ -6,11 +6,13 @@ LBM simulation built in python using JAX and numpy.
 
 This code was developed with `Python=3.10`, tested on Windows and WSL.
 
-Libraries:
-- Numpy
-- Jax
-- Matplotlib
-- tqdm
+Install required libraries:
+
+`pip install -r requirements.txt`
+
+If you're running on Linux and wish to use the GPU, install JAX with all the cuda helpers:
+
+`pip install -U "jax[cuda12]"`
 
 ## Settings.py options
 
