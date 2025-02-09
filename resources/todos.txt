@@ -1,4 +1,4 @@
-TODO add solids as arg to one_time_march()
+TODO add solids as arg to update()
 TODO have plotting be done on a frames-per-second basis, instead of every n-th timestep
 TODO have plotting always on, and then saving frames as option
 TODO have all controlling variables be defined in settings.py

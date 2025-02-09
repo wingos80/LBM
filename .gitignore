@@ -1,6 +1,9 @@
 # ignore the books
 *.pdf
 
+# ignore shortcuts
+*.lnk
+
 # ignore the matlab files
 *.m
 
@@ -9,3 +12,6 @@
 
 # ignore the __ files
 __pycache__/
+
+# ignore test file
+test.py
