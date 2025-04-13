@@ -1,3 +1,7 @@
+"""
+File containing helper functions
+"""
+
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,9 +10,9 @@ import os
 import time
 from settings import *
 if USE_LIBRARY == JAX:
-    from jnpfuncs import *
+    from src.core.jnpfuncs import *
 elif USE_LIBRARY == NP:
-    from npfuncs import *
+    from src.core.npfuncs import *
 
 
 class CatchTime:

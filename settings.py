@@ -1,3 +1,7 @@
+"""
+All the simulations settings are made here
+"""
+
 # Settings
 JAX = "jax"
 NP  = "numpy"

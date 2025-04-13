@@ -23,7 +23,7 @@ SOFTWARE.
 """
 import platform
 from settings import *
-from airfoil import *
+from src.airfoil import *
 if USE_DEVICE==GPU and platform.system()=="Windows":
     print(f"{COLOR.RED}> JAX on windows does not have GPU support <{COLOR.END}")
     USE_DEVICE = CPU
