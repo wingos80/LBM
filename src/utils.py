@@ -9,9 +9,9 @@ import jax.numpy as jnp
 import os
 import time
 from settings import *
-if USE_LIBRARY == JAX:
+if USE_LIBRARY == "jax":
     from src.core.jnpfuncs import *
-elif USE_LIBRARY == NP:
+elif USE_LIBRARY == "numpy":
     from src.core.npfuncs import *
 
 
@@ -37,7 +37,7 @@ class Recorder:
         self.frame = 0
 
     def check_terminate(self):
-        if self.elapsed_time < RECORD_TIME:
+        if self.elapsed_time < VIDEO_LENGTH:
             self.elapsed_time = time.time() - self.start_time
             self.time_since_last_saved = self.elapsed_time - self.last_saved
             print(
@@ -49,7 +49,7 @@ class Recorder:
             return False
 
     def record(self, u, solids):
-        if self.time_since_last_saved > R_FT:
+        if self.time_since_last_saved > FRAME_TIME:
             self.frame += 1
             vorticity = get_vorticity(u, solids)
             plot(
