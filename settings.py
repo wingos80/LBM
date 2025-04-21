@@ -1,38 +1,31 @@
 """
-All the simulations settings are made here
+All the simulations settings are defined here
 """
+# Fluid settings
+TAU  = 0.5075
+CS2  = 1/1
 
-# Settings
-JAX = "jax"
-NP  = "numpy"
-GPU = "gpu"
-CPU = "cpu"
+# Simulation settings
+XMAX       = 400
+YMAX       = 150
+MSIZE      = XMAX*YMAX
+DT         = 1
+TIME       = 720
+INFLOW_VEL = 0.02
 
 # Select library and device
-USE_LIBRARY = JAX
-USE_DEVICE  = CPU
-
-# Grid size
-XMAX  = 400
-YMAX  = 150
-MSIZE = XMAX*YMAX
-
-# Control variables
-TAU  = 0.5075
-DT   = 1
-CS2  = 1/1
-TIME = 720
-INFLOW_VEL = 0.02
+USE_LIBRARY = "jax"
+USE_DEVICE  = "cpu"
 
 # Plotting options
 PLOT_EVERY = 150  # render every n-th frame
 
 # Recording options
-RECORD      = False  # toggle recording
-RECORD_TIME = 10  # how many seconds to record for
-R_FPS       = 15  # frames per second
-R_FT        = 1/R_FPS  # frame time
-IMG_TYPE    = "png"
+RECORD       = False  # toggle recording
+VIDEO_LENGTH = 10  # how many seconds to record for
+VIDEO_FPS    = 15  # frames per second
+IMG_TYPE     = "png"
+FRAME_TIME   = 1/VIDEO_FPS  # frame time
 
 # Pressure difference
 DP      = 0.1
@@ -51,7 +44,6 @@ x = np.arange(XMAX)
 y = np.arange(YMAX)
 X,Y = np.meshgrid(x,y)
 X,Y = X.T, Y.T
-
 
 class COLOR:
    PURPLE = '\033[1;35;48m'
