@@ -1,4 +1,4 @@
 jax==0.4.21
-matplotlib==3.8.3
-numpy==2.2.1
+matplotlib==3.10.1
+numpy==2.2.5
 tqdm==4.67.1
