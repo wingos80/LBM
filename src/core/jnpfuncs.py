@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import platform
-from settings import *
-from src.airfoil import *
+from src.settings import *
+from src.core.airfoil import *
 if USE_DEVICE==GPU and platform.system()=="Windows":
     print(f"{COLOR.RED}> JAX on windows does not have GPU support <{COLOR.END}")
     USE_DEVICE = CPU
