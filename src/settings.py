@@ -1,6 +1,7 @@
 """
 All the simulations settings are defined here
 """
+GPU, CPU = "gpu", "cpu"
 # Fluid settings
 TAU  = 0.5075
 CS2  = 1/1
