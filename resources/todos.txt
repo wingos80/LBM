@@ -1,3 +1,4 @@
+TODO add settings validation
 TODO add solids as arg to update()
 TODO have plotting be done on a frames-per-second basis, instead of every n-th timestep
 TODO have plotting always on, and then saving frames as option
