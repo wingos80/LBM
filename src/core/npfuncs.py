@@ -21,14 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+import logging
+logger = logging.getLogger(__package__)  # ← Uses module's name as logger name
 
 import numpy as np
 from settings import *
 
-if USE_DEVICE==GPU:
-    print(f"{COLOR.RED}> Numpy does not have GPU support <{COLOR.END}")
-    USE_DEVICE = CPU
-print(f"You are using {USE_LIBRARY} on {USE_DEVICE}")
+logger.info(f"You are using {USE_LIBRARY} on {USE_DEVICE}")
 
 ## Initial conditions
 def flow_taylorgreen(t=0, tau=1, rho0=1, u_max=0.2)-> np.ndarray:

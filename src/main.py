@@ -23,7 +23,7 @@ SOFTWARE.
 """
 
 from settings import *
-from src.utils import *
+from utils import *
 
 def main():
     ## Initial Conditions
