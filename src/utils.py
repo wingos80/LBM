@@ -10,9 +10,9 @@ import os
 import time
 from settings import *
 if USE_LIBRARY == "jax":
-    from src.core.jnpfuncs import *
+    from core.jnpfuncs import *
 elif USE_LIBRARY == "numpy":
-    from src.core.npfuncs import *
+    from core.npfuncs import *
 
 
 class CatchTime:

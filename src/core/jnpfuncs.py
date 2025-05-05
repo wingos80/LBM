@@ -21,19 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-import platform
-from src.settings import *
-from src.core.airfoil import *
-if USE_DEVICE==GPU and platform.system()=="Windows":
-    print(f"{COLOR.RED}> JAX on windows does not have GPU support <{COLOR.END}")
-    USE_DEVICE = CPU
+import logging
+logger = logging.getLogger(__package__)  # ← Uses module's name as logger name
+
+from settings import *
+from core.airfoil import *
 import os
 os.environ["JAX_PLATFORM_NAME"] = USE_DEVICE
 
 import jax.numpy as jnp
 import jax
 # jax.config.update("jax_enable_x64", True)
-print(f"You are using {USE_LIBRARY} on {jax.devices()[0].device_kind}")
+logger.info(f"You are using {USE_LIBRARY} on {jax.devices()[0].device_kind}")
 
 ## Initial conditions, TODO make as a class with static methods?
 def flow_taylorgreen(t=0, tau=1, rho0=1, u_max=0.2)-> jnp.ndarray:

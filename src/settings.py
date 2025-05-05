@@ -1,7 +1,7 @@
 """
 All the simulations settings are defined here
 """
-GPU, CPU = "gpu", "cpu"
+
 # Fluid settings
 TAU  = 0.5075
 CS2  = 1/1
@@ -15,8 +15,8 @@ TIME       = 720
 INFLOW_VEL = 0.02
 
 # Select library and device
-USE_LIBRARY = "jax"
-USE_DEVICE  = "cpu"
+USE_LIBRARY = "jax"  # Options: jax, numpy
+USE_DEVICE  = "gpu"  # Options: cpu, gpu
 
 # Plotting options
 PLOT_EVERY = 150  # render every n-th frame
