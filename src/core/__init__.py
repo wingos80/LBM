@@ -1,6 +1,5 @@
-import logging
+import logging, platform, sys, os
 from settings import *
-import platform
 
 # Defining the default logger
 logger = logging.getLogger(__name__)
@@ -32,10 +31,17 @@ handler.setFormatter(formatter)
 if not logger.hasHandlers():
     logger.addHandler(handler)
 
+# Warn if JAX was imported before os envionrment variables are set
+if "jax" in sys.modules:
+    logger.warning("JAX already imported, any JAX settings configured may not be applied")
+
 if USE_LIBRARY=="jax":
+    # Warn if user tries to use JAX with gpu on windows
     if USE_DEVICE=="gpu" and platform.system()=="Windows":
         logger.warning(f"JAX on windows does not have GPU support but was selected")
         USE_DEVICE = "cpu"
+    os.environ["JAX_PLATFORMS"] = USE_DEVICE
+    os.environ["JAX_PLATFORM_NAME"] = USE_DEVICE
 elif USE_LIBRARY=="numpy":
     if USE_DEVICE=="gpu":
         logger.warning(f"Numpy does not have GPU support")
