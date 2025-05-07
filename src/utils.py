@@ -2,18 +2,19 @@
 File containing helper functions
 """
 
-from tqdm import tqdm
-import matplotlib.pyplot as plt
-import numpy as np
-import jax.numpy as jnp
-import os
-import time
-from settings import *
+import settings
+USE_LIBRARY, USE_DEVICE = settings.USE_LIBRARY, settings.USE_DEVICE
+IMG_TYPE = settings.IMG_TYPE
+VIDEO_LENGTH = settings.VIDEO_LENGTH
+FRAME_TIME = settings.FRAME_TIME
+
+# Set the numpy backend for jax if jax is being used
 if USE_LIBRARY == "jax":
     from core.jnpfuncs import *
 elif USE_LIBRARY == "numpy":
     from core.npfuncs import *
-
+import time, os, numpy as np, jax.numpy as jnp, matplotlib.pyplot as plt
+from tqdm import tqdm
 
 class CatchTime:
     def __enter__(self):
