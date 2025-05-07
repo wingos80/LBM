@@ -25,6 +25,7 @@ SOFTWARE.
 from settings import *
 from utils import *
 
+
 def main():
     ## Initial Conditions
     # f = flow_taylorgreen()
@@ -50,6 +51,7 @@ def main():
             recorder.record(u, solids)
 
     print("\n")
+
 
 if __name__ == "__main__":
     with CatchTime() as timer:
