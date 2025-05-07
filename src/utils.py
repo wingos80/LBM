@@ -3,6 +3,7 @@ File containing helper functions
 """
 
 import settings
+
 USE_LIBRARY, USE_DEVICE = settings.USE_LIBRARY, settings.USE_DEVICE
 IMG_TYPE = settings.IMG_TYPE
 VIDEO_LENGTH = settings.VIDEO_LENGTH
@@ -15,6 +16,7 @@ elif USE_LIBRARY == "numpy":
     from core.npfuncs import *
 import time, os, numpy as np, jax.numpy as jnp, matplotlib.pyplot as plt
 from tqdm import tqdm
+
 
 class CatchTime:
     def __enter__(self):
