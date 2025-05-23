@@ -22,7 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import logging, matplotlib.pyplot as plt, numpy as np
+from jax.typing import ArrayLike
+import logging, matplotlib.pyplot as plt, numpy as np, jax
 
 logger = logging.getLogger(__package__)  # ← Uses module's name as logger name
 
@@ -35,7 +36,7 @@ P = MAX_CAMBER_P
 T = THICKNESS / 100
 
 
-def construct_yc(x):
+def construct_yc(x: ArrayLike) -> jax.Array | np.ndarray:
     """
     Function returning y coordinate of the
     mean camber line as a function of x coordinate.
@@ -54,7 +55,7 @@ def construct_yc(x):
     return y
 
 
-def construct_yt(x):
+def construct_yt(x: ArrayLike) -> jax.Array | np.ndarray:
     """
     Function returning the thickness of the airfoil,
     that is distance from the airfoil to the camberline,
@@ -80,7 +81,7 @@ def construct_yt(x):
     return yt
 
 
-def construct_theta(x):
+def construct_theta(x: ArrayLike) -> jax.Array | np.ndarray:
     """
     Function returning the angle of rotation for yt as a function
     of x coordinate
@@ -99,7 +100,7 @@ def construct_theta(x):
     return theta
 
 
-def construct_airfoil(x):
+def construct_airfoil(x: ArrayLike) -> tuple[jax.Array | np.ndarray, jax.Array | np.ndarray]:
     """
     Returns upper and lower airfoil coordinates
     """

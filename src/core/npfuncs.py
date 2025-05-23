@@ -30,7 +30,7 @@ logger.info(f"You are using {USE_LIBRARY} on {USE_DEVICE}")
 
 
 ## Initial conditions
-def flow_taylorgreen(t=0, tau=1, rho0=1, u_max=0.2) -> np.ndarray:
+def flow_taylorgreen(t: float = 0.0, tau: float = 1.0, rho0: float = 1.0, u_max: float = 0.2) -> np.ndarray:
     nu = (2 * tau - 1) / 6
     x = np.arange(XMAX) + 0.5
     y = np.arange(YMAX) + 0.5
@@ -128,7 +128,7 @@ def calculate_rho(f: np.ndarray) -> np.ndarray:
     return np.sum(f, axis=2)
 
 
-def calculate_momentum(f: np.ndarray, c=None) -> np.ndarray:
+def calculate_momentum(f: np.ndarray, c: np.ndarray | None = None) -> np.ndarray:
     """
     :param f: population, particle vector field, how many particles moving in each direction per cell
     :param c: basis velocity components
@@ -203,7 +203,7 @@ def calculate_f_eq(rho: np.ndarray, u: np.ndarray) -> np.ndarray:
 
 
 ## Simulation steps
-def collision_step(f: np.ndarray, f_eq: np.ndarray, dt=1, tau=1) -> np.ndarray:
+def collision_step(f: np.ndarray, f_eq: np.ndarray, dt: float = 1, tau: float = 1) -> np.ndarray:
     """
     BGK collision step
     :param f: array containing the current population
@@ -230,7 +230,7 @@ def BC_solids(f: np.ndarray, solids: np.ndarray[bool]) -> np.ndarray:
 ## Simulation function
 
 
-def update(f: np.ndarray, solids):
+def update(f: np.ndarray, solids: np.ndarray[bool]) -> tuple[np.ndarray, np.ndarray]:
     """
     Simulate one step forward in time
     """

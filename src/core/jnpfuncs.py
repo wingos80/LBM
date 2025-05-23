@@ -24,14 +24,14 @@ SOFTWARE.
 
 from settings import *
 from core.airfoil import *
-import logging, os, jax, jax.numpy as jnp
+import logging, jax, jax.numpy as jnp
 
 logger = logging.getLogger(__package__)  # Use module's name as logger name
 logger.info(f"You are using {USE_LIBRARY} on {jax.devices()[0].device_kind}")
 
 
 ## Initial conditions, TODO make as a class with static methods?
-def flow_taylorgreen(t=0, tau=1, rho0=1, u_max=0.2) -> jnp.ndarray:
+def flow_taylorgreen(t: float = 0.0, tau: float = 1.0, rho0: float = 1.0, u_max: float = 0.2) -> jax.Array:
     nu = (2 * tau - 1) / 6
     x = jnp.arange(XMAX) + 0.5
     y = jnp.arange(YMAX) + 0.5
@@ -71,7 +71,7 @@ def flow_taylorgreen(t=0, tau=1, rho0=1, u_max=0.2) -> jnp.ndarray:
     return f
 
 
-def flow_up() -> jnp.ndarray:
+def flow_up() -> jax.Array:
     rho = jnp.ones((XMAX, YMAX))
     u = jnp.ones((XMAX, YMAX, 2))
     u[:, :, 0] = 0  # make ux 0
@@ -81,7 +81,7 @@ def flow_up() -> jnp.ndarray:
     return f
 
 
-def flow_right() -> jnp.ndarray:
+def flow_right() -> jax.Array:
     vel = INFLOW_VEL
     rho = jnp.ones((XMAX, YMAX))
     # rho[-3,:] += 1
@@ -94,7 +94,7 @@ def flow_right() -> jnp.ndarray:
     return f
 
 
-def flow_random() -> jnp.ndarray:
+def flow_random() -> jax.Array:
     spread = 0.1
     rho = jnp.ones((XMAX, YMAX))
     u = jnp.ones((XMAX, YMAX, 2))
@@ -107,7 +107,7 @@ def flow_random() -> jnp.ndarray:
 
 
 ## Solid material creation
-def create_solids() -> jnp.ndarray:
+def create_solids() -> jax.Array:
     solids = jnp.logical_or(Y == 0, Y == YMAX - 1)  # solid top and bottom walls
     circle_center = XMAX / 4, YMAX / 2 + 4
     circle_radius = YMAX / 10
@@ -154,7 +154,7 @@ def create_solids() -> jnp.ndarray:
 
 
 ## Moments of f
-def calculate_rho(f: jnp.ndarray) -> jnp.ndarray:
+def calculate_rho(f: jax.Array) -> jax.Array:
     """
     :param f: population, particle vector field, how many particles moving in each direction per cell
     :returns: density, scalar field, particles per cell
@@ -162,7 +162,7 @@ def calculate_rho(f: jnp.ndarray) -> jnp.ndarray:
     return jnp.sum(f, axis=2)
 
 
-def calculate_momentum(f: jnp.ndarray, c=None) -> jnp.ndarray:
+def calculate_momentum(f: jax.Array, c: jax.Array | None = None) -> jax.Array:
     """
     :param f: population, particle vector field, how many particles moving in each direction per cell
     :param c: basis velocity components
@@ -184,7 +184,7 @@ def calculate_momentum(f: jnp.ndarray, c=None) -> jnp.ndarray:
     return jnp.stack((momentum_x, momentum_y), axis=2)
 
 
-def calculate_velocity(momentum: jnp.ndarray, rho: jnp.ndarray) -> jnp.ndarray:
+def calculate_velocity(momentum: jax.Array, rho: jax.Array) -> jax.Array:
     """
     :param momentum: momentum, vector field, how many particles moving in each direction per cell
     :param rho: density, scalar field, particles per cell
@@ -196,7 +196,7 @@ def calculate_velocity(momentum: jnp.ndarray, rho: jnp.ndarray) -> jnp.ndarray:
     return u
 
 
-def calculate_f_eq(rho: jnp.ndarray, u: jnp.ndarray) -> jnp.ndarray:
+def calculate_f_eq(rho: jax.Array, u: jax.Array) -> jax.Array:
     """
     Returns the equillibrium population/particle field.
     Implementation is specific for D2Q9, meaning that the weights of
@@ -239,7 +239,7 @@ def calculate_f_eq(rho: jnp.ndarray, u: jnp.ndarray) -> jnp.ndarray:
 
 
 ## Simulation steps
-def collision_step(f: jnp.ndarray, f_eq: jnp.ndarray, dt=1, tau=1) -> jnp.ndarray:
+def collision_step(f: jax.Array, f_eq: jax.Array, dt: float = 1.0, tau: float = 1.0) -> jax.Array:
     """
     BGK collision step
     :param f: array containing the current population
@@ -249,7 +249,7 @@ def collision_step(f: jnp.ndarray, f_eq: jnp.ndarray, dt=1, tau=1) -> jnp.ndarra
     return f * (1 - dt / tau) + dt / tau * f_eq
 
 
-def streaming_step(f: jnp.ndarray) -> jnp.ndarray:
+def streaming_step(f: jax.Array) -> jax.Array:
     """
     Particle streamed according to their velocities
     """
@@ -264,7 +264,7 @@ def streaming_step(f: jnp.ndarray) -> jnp.ndarray:
     return f_streamed
 
 
-def BC_solids(f: jnp.ndarray, solids: jnp.ndarray) -> jnp.ndarray:
+def BC_solids(f: jax.Array, solids: jax.Array[bool]) -> jax.Array:
     """
     Boundary condition for solids
     """
@@ -279,7 +279,7 @@ def BC_solids(f: jnp.ndarray, solids: jnp.ndarray) -> jnp.ndarray:
 
 ## Simulation function
 @jax.jit
-def update(f: np.ndarray, solids):
+def update(f: jax.Array, solids: jax.Array[bool]) -> tuple[jax.Array, jax.Array]:
     """
     Simulate one step forward in time
     """
