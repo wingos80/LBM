@@ -100,7 +100,9 @@ def construct_theta(x: ArrayLike) -> jax.Array | np.ndarray:
     return theta
 
 
-def construct_airfoil(x: ArrayLike) -> tuple[jax.Array | np.ndarray, jax.Array | np.ndarray]:
+def construct_airfoil(
+    x: ArrayLike,
+) -> tuple[jax.Array | np.ndarray, jax.Array | np.ndarray]:
     """
     Returns upper and lower airfoil coordinates
     """
