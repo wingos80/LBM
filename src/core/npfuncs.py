@@ -22,15 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import logging, numpy as np
 from settings import *
+from core.airfoil import *
+import logging, numpy as np
 
 logger = logging.getLogger(__package__)  # Use module's name as logger name
 logger.info(f"You are using {USE_LIBRARY} on {USE_DEVICE}")
 
 
 ## Initial conditions
-def flow_taylorgreen(t: float = 0.0, tau: float = 1.0, rho0: float = 1.0, u_max: float = 0.2) -> np.ndarray:
+def flow_taylorgreen(
+    t: float = 0.0, tau: float = 1.0, rho0: float = 1.0, u_max: float = 0.2
+) -> np.ndarray:
     nu = (2 * tau - 1) / 6
     x = np.arange(XMAX) + 0.5
     y = np.arange(YMAX) + 0.5
@@ -102,21 +105,6 @@ def flow_random() -> np.ndarray:
     u += spread * (np.random.rand(XMAX, YMAX, 2) - 0.5)
     f = calculate_f_eq(rho, u)
     return f
-
-
-## Solid material creation
-
-
-def create_solids() -> np.ndarray:
-    solids = np.logical_or(Y == 0, Y == YMAX - 1)  # solid top and bottom walls
-    # solids = np.full(Y.shape, False)
-    # solids[:,:] = False
-    circle_center = XMAX / 4, YMAX / 2 + 4
-    circle_radius = YMAX / 5
-    solids += (X - circle_center[0]) ** 2 + (Y - circle_center[1]) ** 2 < (
-        circle_radius
-    ) ** 2
-    return solids
 
 
 ## Moments of f
@@ -203,7 +191,9 @@ def calculate_f_eq(rho: np.ndarray, u: np.ndarray) -> np.ndarray:
 
 
 ## Simulation steps
-def collision_step(f: np.ndarray, f_eq: np.ndarray, dt: float = 1, tau: float = 1) -> np.ndarray:
+def collision_step(
+    f: np.ndarray, f_eq: np.ndarray, dt: float = 1, tau: float = 1
+) -> np.ndarray:
     """
     BGK collision step
     :param f: array containing the current population
@@ -220,7 +210,7 @@ def streaming_step(f: np.ndarray) -> np.ndarray:
     return f
 
 
-def BC_solids(f: np.ndarray, solids: np.ndarray[bool]) -> np.ndarray:
+def BC_solids(f: np.ndarray, solids: np.ndarray) -> np.ndarray:
     b = f[solids, :]
     b = b[:, [0, 3, 4, 1, 2, 7, 8, 5, 6]]
     f[solids, :] = b
@@ -230,7 +220,7 @@ def BC_solids(f: np.ndarray, solids: np.ndarray[bool]) -> np.ndarray:
 ## Simulation function
 
 
-def update(f: np.ndarray, solids: np.ndarray[bool]) -> tuple[np.ndarray, np.ndarray]:
+def update(f: np.ndarray, solids: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
     Simulate one step forward in time
     """

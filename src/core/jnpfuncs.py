@@ -31,7 +31,9 @@ logger.info(f"You are using {USE_LIBRARY} on {jax.devices()[0].device_kind}")
 
 
 ## Initial conditions, TODO make as a class with static methods?
-def flow_taylorgreen(t: float = 0.0, tau: float = 1.0, rho0: float = 1.0, u_max: float = 0.2) -> jax.Array:
+def flow_taylorgreen(
+    t: float = 0.0, tau: float = 1.0, rho0: float = 1.0, u_max: float = 0.2
+) -> jax.Array:
     nu = (2 * tau - 1) / 6
     x = jnp.arange(XMAX) + 0.5
     y = jnp.arange(YMAX) + 0.5
@@ -104,53 +106,6 @@ def flow_random() -> jax.Array:
     u += spread * (jnp.random.rand(XMAX, YMAX, 2) - 0.5)
     f = calculate_f_eq(rho, u)
     return f
-
-
-## Solid material creation
-def create_solids() -> jax.Array:
-    solids = jnp.logical_or(Y == 0, Y == YMAX - 1)  # solid top and bottom walls
-    circle_center = XMAX / 4, YMAX / 2 + 4
-    circle_radius = YMAX / 10
-    # solids += (X - circle_center[0])**2 + (Y - circle_center[1])**2 < (circle_radius)**2
-
-    airfoil_le = XMAX // 6, YMAX // 2  # location of airfoil leading edge
-    chord_length = XMAX // 4  # size of airfoil, scaling factor
-    n_pts = 10000
-    x = np.linspace(0, 1, n_pts)
-    U_n, L_n = construct_airfoil(x)
-    rotate = -10 * np.pi / 180
-    R = np.array([[np.cos(rotate), -np.sin(rotate)], [np.sin(rotate), np.cos(rotate)]])
-
-    U, L = chord_length * U_n, chord_length * L_n
-    step = n_pts // chord_length  # assuming n_pts > chord length
-
-    # rotate the airfoil
-    U = R @ U
-    L = R @ L
-
-    top = U[1].max()
-    bottom = L[1].min()
-
-    U[1] += abs(bottom)
-    L[1] += abs(bottom)
-
-    thickness = int(np.ceil(top - bottom))
-    hold_array = jnp.full((chord_length, thickness), False)
-
-    for i in range(chord_length):
-        location = i * step
-        slice_i = jnp.arange(thickness)
-        slice_i = jnp.logical_and(slice_i >= L[1, location], slice_i <= U[1, location])
-
-        hold_array = hold_array.at[i].set(slice_i)
-
-    solids_2 = jnp.full((XMAX, YMAX), False)
-    solids_2 = solids_2.at[:chord_length, :thickness].set(hold_array)
-    solids_2 = jnp.roll(
-        jnp.roll(solids_2, airfoil_le[0], axis=0), airfoil_le[1], axis=1
-    )
-    # solids += solids_2
-    return solids_2
 
 
 ## Moments of f
@@ -239,7 +194,9 @@ def calculate_f_eq(rho: jax.Array, u: jax.Array) -> jax.Array:
 
 
 ## Simulation steps
-def collision_step(f: jax.Array, f_eq: jax.Array, dt: float = 1.0, tau: float = 1.0) -> jax.Array:
+def collision_step(
+    f: jax.Array, f_eq: jax.Array, dt: float = 1.0, tau: float = 1.0
+) -> jax.Array:
     """
     BGK collision step
     :param f: array containing the current population
@@ -264,7 +221,7 @@ def streaming_step(f: jax.Array) -> jax.Array:
     return f_streamed
 
 
-def BC_solids(f: jax.Array, solids: jax.Array[bool]) -> jax.Array:
+def BC_solids(f: jax.Array, solids: jax.Array) -> jax.Array:
     """
     Boundary condition for solids
     """
@@ -279,7 +236,7 @@ def BC_solids(f: jax.Array, solids: jax.Array[bool]) -> jax.Array:
 
 ## Simulation function
 @jax.jit
-def update(f: jax.Array, solids: jax.Array[bool]) -> tuple[jax.Array, jax.Array]:
+def update(f: jax.Array, solids: jax.Array) -> tuple[jax.Array, jax.Array]:
     """
     Simulate one step forward in time
     """
