@@ -4,7 +4,7 @@ LBM simulation built in python using JAX and numpy.
 
 ## Requirements
 
-This code was developed with `Python=3.10`, tested on Windows and WSL.
+This code was developed with Python `3.10.X`, tested on Windows and WSL.
 
 Install required libraries:
 
