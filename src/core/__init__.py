@@ -44,11 +44,11 @@ if "jax" in sys.modules:
 if settings.USE_LIBRARY == "jax":
     # Warn if user tries to use JAX with gpu on windows
     if settings.USE_DEVICE == "cuda" and platform.system() == "Windows":
-        logger.warning(f"JAX on windows does not have GPU support but was selected")
+        logger.warning(f"Running on Windows, JAX with CUDA was selected, but JAX does not support CUDA on Windows.")
         settings.USE_DEVICE = "cpu"
     os.environ["JAX_PLATFORMS"] = settings.USE_DEVICE
     os.environ["JAX_PLATFORM_NAME"] = settings.USE_DEVICE
 elif settings.USE_LIBRARY == "numpy":
     if settings.USE_DEVICE == "gpu":
-        logger.warning(f"Numpy does not have GPU support")
+        logger.warning(f"NumPy does not have GPU support")
         settings.USE_DEVICE = "cpu"

@@ -11,11 +11,11 @@ XMAX = 400
 YMAX = 150
 MSIZE = XMAX * YMAX
 DT = 1
-TIME = 720
+TIME = 7200
 INFLOW_VEL = 0.02
 
 # Select library and device
-USE_LIBRARY = "numpy"  # Options: jax, numpy
+USE_LIBRARY = "jax"  # Options: jax, numpy
 USE_DEVICE = "cuda"  # Options: cpu, cuda
 
 # Plotting options

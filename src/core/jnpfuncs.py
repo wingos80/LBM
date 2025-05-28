@@ -27,6 +27,7 @@ from core.airfoil import *
 import logging, jax, jax.numpy as jnp
 
 logger = logging.getLogger(__package__)  # Use module's name as logger name
+libname = "JAX" if USE_LIBRARY == "jax" else "NumPy"
 logger.info(f"You are using {USE_LIBRARY} on {jax.devices()[0].device_kind}")
 
 
