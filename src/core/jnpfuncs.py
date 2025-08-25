@@ -219,6 +219,17 @@ def streaming_step(f: jax.Array) -> jax.Array:
         ],
         axis=2,
     )
+    # args = (f, c)
+    # def body_fun(i, val):
+    #     """
+    #     i: iteration
+    #     val: tuple with first element being f, second being c"""
+    #     f = val[0]
+    #     c = val[1]
+    #     f = f.at[:,:,i].set(jnp.roll(jnp.roll(f[:,:,i], c[0, i], axis=0), c[1, i], axis=1))
+    #     return f, c
+    # out_args = jax.lax.fori_loop(0, 9, body_fun, args)
+    # f_streamed = out_args[0]
     return f_streamed
 
 
