@@ -19,10 +19,10 @@ USE_LIBRARY = "jax"  # Options: jax, numpy
 USE_DEVICE = "cuda"  # Options: cpu, cuda
 
 # Plotting options
-PLOT_EVERY = 150  # render every n-th frame
+PLOT_EVERY = 50  # render every n-th frame
 
 # Recording options
-RECORD = False  # toggle recording
+RECORD = False # toggle recording
 VIDEO_LENGTH = 10  # how many seconds to record for
 VIDEO_FPS = 15  # frames per second
 IMG_TYPE = "png"
